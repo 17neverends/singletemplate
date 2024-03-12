@@ -749,6 +749,8 @@ function sliderShowPoint(point){
 
     sliderpoint2.style.display = 'none';
     sliderpoint3.style.display = 'none';
+    sliderpoint4.style.display = 'none';
+
     toTarif = false;
 
   } 
@@ -760,6 +762,7 @@ function sliderShowPoint(point){
     page4.style.display = 'none';
 
     sliderpoint3.style.display = 'none';
+    sliderpoint4.style.display = 'none';
 
 
   }
@@ -1011,8 +1014,6 @@ function updateCost() {
       status.style.display = 'none';
       cost_6.innerText = '';
       floorLift.value = '';
-      manualRadio.checked = false;
-      liftRadio.checked = false;
       result.field6 = false;
 
   }
@@ -1062,8 +1063,13 @@ function updateCost() {
                       }
                   }
                   totalcost += cost;
+                  if (cost === 0){
+                    cost_6.innerText = '';
+                  } else {
+                    cost_6.innerText = `${cost}₽`;
+
+                  }
   
-                  cost_6.innerText = `${cost}₽`;
                   result.field6 = [`${cost}₽`,floorsValue, floorType.value];
 
               }
@@ -1255,22 +1261,7 @@ function updateBoxCount(boxName, newValue) {
   }
 }
 
-function submit_info() {
-  sliderShowPoint(4);
 
-  if (selectedType.toLowerCase() === 'не выбран') {
-
-  } else if (selectedType.toLowerCase() === 'дверь - дверь'){
-
-  } else if (selectedType.toLowerCase() === 'дверь - склад'){
-  
-  } else if (selectedType.toLowerCase() === 'склад - дверь'){
-  
-  } else if (selectedType.toLowerCase() === 'склад - склад'){
-  
-  }
-
-}
 
 
 
@@ -1585,3 +1576,182 @@ function handleMobileInput(event) {
 }
 
 
+let filterTimeoutPvz;
+let lastInputValuePvz = '';
+let selectedPoint;
+
+function handleInputPvz(inputElement, list, input_value, otherList) {
+  clearTimeout(filterTimeoutPvz);
+
+  const trimmedInputValue = input_value.trim();
+
+  if (trimmedInputValue.length < 2) {
+      list.style.display = 'none';
+      return;
+  }
+
+  filterTimeoutPvz = setTimeout(async () => {
+      const response = await fetch(`/search_points?query=${encodeURIComponent(trimmedInputValue)}`);
+      const result = await response.json();
+      if (inputElement.value !== lastInputValuePvz) {
+          return;
+      }
+      const filtered_cities = result.data;
+      console.log(filtered_cities);
+
+      dropdownList(list, filtered_cities, [], trimmedInputValue, inputElement, otherList);
+  }, 300);
+
+  lastInputValuePvz = inputElement.value;
+}
+
+function displayAllItemsPvz(list, display_items, input_value, inputElement) {
+  list.innerHTML = '';
+  const inputLower = input_value.toLowerCase();
+  display_items.forEach(item => {
+      const li = document.createElement('li');
+      li.className = 'dropdown-item';
+      const index = item.lastIndexOf(",");
+      const cityText = index !== -1 ? item.substring(0, index) : item;
+      const cityNumber = index !== -1 ? item.substring(index + 1) : '';
+      const matchIndex = cityText.toLowerCase().indexOf(inputLower);
+      if (matchIndex !== -1) {
+          const before = document.createTextNode(cityText.substring(0, matchIndex));
+          const match = document.createElement('span');
+          match.style.fontWeight = 'bold';
+          match.textContent = cityText.substring(matchIndex, matchIndex + inputLower.length);
+          const after = document.createTextNode(cityText.substring(matchIndex + inputLower.length));
+
+          li.appendChild(before);
+          li.appendChild(match);
+          li.appendChild(after);
+      } else {
+          li.textContent = cityText;
+      }
+      li.addEventListener('click', function () {
+        inputElement.value = cityText.trim();
+        list.style.display = 'none';
+        if (list === senderPointList) {
+            destination_from_list = true;
+            selectedPoint = cityNumber.trim();
+        }
+    });
+      list.appendChild(li);
+      li.classList.add('fade-in');
+      li.addEventListener('animationend', () => {
+          list.style.display = 'block';
+      });
+  });
+}
+
+function dropdownList(list, filtered_cities, filtered_regions, input_value, inputElement, otherList) {
+    let itemsToDisplay = [];
+    if (input_value !== '') {
+        if (filtered_cities.length > 0) {
+            itemsToDisplay = filtered_cities;
+        } else if (filtered_regions.length > 0) {
+            itemsToDisplay = filtered_regions;
+        }
+    }
+    list.style.display = itemsToDisplay.length > 0 ? 'block' : 'none';
+    if (itemsToDisplay.length > 0) {
+        displayAllItemsPvz(list, itemsToDisplay, input_value, inputElement);
+    }
+    if (otherList) {
+        otherList.style.display = 'none';
+    }
+}
+
+let senderPoint;
+let senderPointList;
+
+
+function handleInputPvzChange(inputElement, list, otherList) {
+  const trimmedInputValue = inputElement.value.trim();
+  handleInputPvz(inputElement, list, trimmedInputValue, otherList);
+}
+
+function setupEventListenersPvz() {
+    senderPoint.addEventListener('input', () => handleInputPvzChange(senderPoint, senderPointList));
+
+    document.addEventListener('click', event => {
+        if (event.target !== senderPoint) {
+            senderPointList.style.display = 'none';
+        }
+    });
+
+    senderPoint.addEventListener('blur', () => clearTimeout(filterTimeoutPvz));
+}
+
+
+function submit_info() {
+  let additRecepient = document.querySelector(".additionalRecepientInputs")
+  let additSender = document.querySelector(".additionalSenderInputs")
+
+  sliderShowPoint(4);
+
+  if (selectedType.toLowerCase() === 'не выбран') {
+
+  } else if (selectedType.toLowerCase() === 'дверь - дверь'){
+    additSender.innerHTML = `<label>Адрес</label>
+    <input type="text" id="sender_address" name="sender_address" placeholder="Введите адрес">
+    <label>Дом</label>
+    <input type="text" id="sender_house" name="sender_house" placeholder="Введите дом">
+    <label>Квартира</label>
+    <input type="text" id="sender_flat" name="sender_flat" placeholder="Введите квартиру">`;
+
+    additRecepient.innerHTML = `<label>Адрес</label>
+    <input type="text" id="recipient_address" name="recipient_address" placeholder="Введите адрес">
+    <label>Дом</label>
+    <input type="text" id="recipient_house" name="recipient_house" placeholder="Введите дом">
+    <label>Квартира</label>
+    <input type="text" id="recipient_flat" name="recipient_flat" placeholder="Введите квартиру">`;
+
+  } else if (selectedType.toLowerCase() === 'дверь - склад'){
+
+    additRecepient.innerHTML = `<label>Адрес</label>
+    <input type="text" id="recipient_address" name="recipient_address" placeholder="Введите адрес">
+    <label>Дом</label>
+    <input type="text" id="recipient_house" name="recipient_house" placeholder="Введите дом">
+    <label>Квартира</label>
+    <input type="text" id="recipient_flat" name="recipient_flat" placeholder="Введите квартиру">`;
+
+    additSender.innerHTML = `<label>Адрес пункта выдачи заказа</label>
+    <div class="destination_points_dropdown">
+
+    <input type="text" id="sender_point" name="sender_point" placeholder="Введите адрес ПВЗ">
+    <ul id="sender_point-list" data-cities="{{ data }}"></ul>`;
+
+    senderPoint = document.getElementById('sender_point');
+    senderPointList = document.getElementById('sender_point-list');
+    setupEventListenersPvz();
+
+
+  
+  } else if (selectedType.toLowerCase() === 'склад - дверь'){
+    additSender.innerHTML = `<label>Адрес</label>
+    <input type="text" id="sender_address" name="sender_address" placeholder="Введите адрес">
+    <label>Дом</label>
+    <input type="text" id="sender_house" name="sender_house" placeholder="Введите дом">
+    <label>Квартира</label>
+    <input type="text" id="sender_flat" name="sender_flat" placeholder="Введите квартиру">`;
+
+    additRecepient.innerHTML = ``;
+    
+  
+  } else if (selectedType.toLowerCase() === 'склад - склад'){
+    additRecepient.innerHTML = ``;
+
+    additSender.innerHTML = `<label>Адрес пункта выдачи заказа</label>
+    <div class="destination_points_dropdown">
+
+    <input type="text" id="sender_point" name="sender_point" placeholder="Введите адрес ПВЗ">
+    <ul id="sender_point-list" data-cities="{{ data }}"></ul>`;
+
+    senderPoint = document.getElementById('sender_point');
+    senderPointList = document.getElementById('sender_point-list');
+    setupEventListenersPvz();
+
+  }
+
+}
