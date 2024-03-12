@@ -361,7 +361,7 @@ ul {
     opacity: 0.6;
 }
 
-.step2, .step3 {
+.step2, .step3, .step4 {
     display: none;
 }
 
@@ -453,7 +453,7 @@ ul {
     margin-right: 10px;
 }
 
-#slider2, #slider3{
+#slider2, #slider3, #slider4{
     display: none;
 }
 

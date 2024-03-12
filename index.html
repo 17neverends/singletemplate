@@ -14,6 +14,7 @@
             <button class="slider_button active" id="slider1" type="button" onclick="sliderShowPoint(1)">1</button>
             <button class="slider_button" id="slider2" type="button" onclick="sliderShowPoint(2)">2</button>
             <button class="slider_button" id="slider3" type="button" onclick="sliderShowPoint(3)">3</button>
+            <button class="slider_button" id="slider4" type="button" onclick="sliderShowPoint(4)">4</button>
 
         </div>        
         <div class="step1">
@@ -238,8 +239,10 @@
                     </div>
                 </div>
             </div>
-            <button class="addNumberButton" type="button" id="add" onclick="addNumber('recipient')" >+ Добавить номер</button>
-            
+            <button class="addNumberButton" type="button" id="add" onclick="addNumberPhone('recipient')" >+ Добавить номер</button>
+            <div class="additionalSenderInputs">
+                
+            </div>
             
     
     
@@ -269,19 +272,21 @@
                 </div>
                 </div>
             </div>
-            <button class="addNumberButton" type="button" id="add" onclick="addNumber('sender')" >+ Добавить номер</button>
+            <button class="addNumberButton" type="button" id="add" onclick="addNumberPhone('sender')" >+ Добавить номер</button>
+            <div class="additionalSenderInputs">
+
+            </div>
             
             
-            
     
     
     
     
     
-            <label class="status" id="status"></label>
+            <p class="status" id="status3"></p>
     
-            <button type="button" class="confirm" onclick="check_inputs()">Принять</button>
-            <button type="button" class="back">Назад</button>
+            <button type="button" class="confirm" onclick="check_inputs_page4()">Принять</button>
+            <button type="button" class="back" id="back_to_3" onclick="sliderShowPoint(3)">Назад</button>
         </div>
         
     </form>

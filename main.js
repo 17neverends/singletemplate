@@ -3,6 +3,8 @@ const targetInput = document.getElementById('destination_city');
 const departureCityList = document.getElementById('departure_city-list');
 const destinationCityList = document.getElementById('destination_city-list');
 let backButton = document.getElementById("back_to_2");
+let backButtonTo3 = document.getElementById("back_to_3");
+let star;
 
 async function init() {
   setupEventListeners();
@@ -48,6 +50,8 @@ let data;
 
 let sliderpoint2 = document.getElementById('slider2');
 let sliderpoint3 = document.getElementById('slider3');
+let sliderpoint4 = document.getElementById('slider4');
+
 const customDropdown = document.getElementById('custom_dropdown');
 let placeCounter = 2;
 let toTarif = false;
@@ -359,9 +363,7 @@ function check_inputs_step1() {
           { "type": "Склад - склад", "cost": "400₽", "datetime": "1-2 раб.д" }
       ]
   };
-  backButton.onclick = function() {
-    sliderShowPoint(2);
-};
+
   details = responseData.details;
 
   showDetailsOnPage();
@@ -397,9 +399,7 @@ function check_inputs_step1() {
       "стоимость": 60
       }
     }
-    backButton.onclick = function() {
-      sliderShowPoint(1);
-  };
+
     document.getElementById('totalcost').style.display = 'none';
     data = calculatePackagesSum(gatherFormData());
     star = false;
@@ -413,7 +413,6 @@ function check_inputs_step1() {
     sliderShowPoint(3);
     cost_6.style.display = 'block';
 
-    sliderpoint3.innerText = '2';
 
   }
       } else {
@@ -746,6 +745,8 @@ function sliderShowPoint(point){
     page1.style.display = 'block';
     page2.style.display = 'none';
     page3.style.display = 'none';
+    page4.style.display = 'none';
+
     sliderpoint2.style.display = 'none';
     sliderpoint3.style.display = 'none';
     toTarif = false;
@@ -756,6 +757,8 @@ function sliderShowPoint(point){
     page1.style.display = 'none';
     page2.style.display = 'block';
     page3.style.display = 'none';
+    page4.style.display = 'none';
+
     sliderpoint3.style.display = 'none';
 
 
@@ -765,7 +768,23 @@ function sliderShowPoint(point){
     page1.style.display = 'none';
     page2.style.display = 'none';
     page3.style.display = 'block';
+    page4.style.display = 'none';
+
     sliderpoint3.style.display = 'block';
+    sliderpoint4.style.display = 'none';
+
+    if (!toTarif){
+      sliderpoint3.innerText = '2';
+      backButton.onclick = function() {
+        sliderShowPoint(1);
+    };
+    } else {
+      sliderpoint3.innerText = '3';
+      backButton.onclick = function() {
+        sliderShowPoint(2);
+    };
+
+    }
 
 
   }
@@ -775,9 +794,15 @@ function sliderShowPoint(point){
     page1.style.display = 'none';
     page2.style.display = 'none';
     page3.style.display = 'none';
-
     page4.style.display = 'block';
+    sliderpoint4.style.display = 'block';
 
+    if (!toTarif){
+      sliderpoint4.innerText = '3';
+    } else {
+      sliderpoint4.innerText = '4';
+
+    }
   }
 }
 
@@ -1230,24 +1255,24 @@ function updateBoxCount(boxName, newValue) {
   }
 }
 
-function submit_info(deliveryType) {
+function submit_info() {
   sliderShowPoint(4);
-  if (deliveryType === 'не выбран') {
 
-  } else if (deliveryType === 'дверь - дверь'){
+  if (selectedType.toLowerCase() === 'не выбран') {
 
-  } else if (deliveryType === 'дверь - склад'){
+  } else if (selectedType.toLowerCase() === 'дверь - дверь'){
+
+  } else if (selectedType.toLowerCase() === 'дверь - склад'){
   
-  } else if (deliveryType === 'склад - дверь'){
+  } else if (selectedType.toLowerCase() === 'склад - дверь'){
   
-  } else if (deliveryType === 'склад - склад'){
+  } else if (selectedType.toLowerCase() === 'склад - склад'){
   
   }
 
 }
 
 
-let star;
 
 function calculateInitialCost() {
   let totalcost = 0;
@@ -1321,4 +1346,242 @@ function calculateInitialCost() {
   }
   return cost;
 }
+
+
+
+
+///////////////////////////////////////////////
+
+const status3 = document.getElementById('status3');
+
+
+let recipientPlaceCounter = 2;
+let senderPlaceCounter = 2;
+
+function addNumberPhone(role) {
+  let placeCounter;
+
+  if (role === 'recipient') {
+    placeCounter = recipientPlaceCounter;
+    recipientPlaceCounter++;
+  } else {
+    placeCounter = senderPlaceCounter;
+    senderPlaceCounter++;
+  } 
+
+  const newPlace = document.createElement('div');
+  newPlace.classList.add(`${role}_numbers`);
+  newPlace.id = `${role}_numbers${placeCounter}`;
+
+  newPlace.innerHTML = `
+  <div class="numbers-flex"> 
+    <div style="margin-right: 20px;"> 
+      <label>Номер</label>
+      <input type="text" class="${role}_mobile" id="${role}_mobile${placeCounter}" name="${role}_mobile${placeCounter}" placeholder="Введите номер">
+    </div>
+
+    <div>
+      <label>Добавочный</label>
+      <input type="text" class="${role}_addit" id="${role}_addit${placeCounter}" name="${role}_addit${placeCounter}" placeholder="Введите номер">
+    </div>
+  </div>
+  <button class="addNumberButton" id="for_delete" type="button" onclick="removeNumberPhone('${role}', '${role}_numbers${placeCounter}')">Удалить</button>`;
+  document.getElementById(`${role}_numbers-container`).appendChild(newPlace);
+}
+
+function removeNumberPhone(role, placeId) {
+  const placeToRemove = document.getElementById(placeId);
+  placeToRemove.remove();
+
+  let placeCounters;
+  if (role === 'recipient') {
+    placeCounters = recipientPlaceCounter;
+    recipientPlaceCounter--;
+  } else {
+    placeCounters = senderPlaceCounter;
+    senderPlaceCounter--;
+  } 
+
+  const places = document.getElementsByClassName(`${role}_numbers`);
+  for (let i = 0; i < places.length; i++) {
+    const currentNumber = places[i];
+    const newPlaceCounter = i + 1;
+
+    currentNumber.id = `${role}_numbers${newPlaceCounter}`;
+
+    currentNumber.querySelectorAll(`[id^='${role}_mobile'], [id^='${role}_addit']`).forEach(element => {
+      const currentElementId = element.id;
+      element.id = currentElementId.replace(/\d+$/, newPlaceCounter);
+    });
+
+    const deleteButton = currentNumber.querySelector('button');
+    if (deleteButton) {
+      deleteButton.setAttribute('onclick', `removePlace('${role}', '${role}_numbers${newPlaceCounter}')`);
+    }
+  }
+}
+document.addEventListener('click', function(event) {
+  if (event.target && event.target.matches('button[id^="delete"]')) {
+      const buttonId = event.target.id;
+      const placeId = buttonId.replace('delete', 'place');
+      removePlace(placeId);
+  }
+});
+
+function check_inputs_page4() {
+  const recipientNumbers = document.getElementsByClassName('recipient_numbers');
+  const senderNumbers = document.getElementsByClassName('sender_numbers');
+  let isValid = true;
+
+  function validateInput(input, validationFunction) {
+      return input.trim() !== '' && !validationFunction(input);
+  }
+
+  function processInputs(inputs, prefix) {
+      for (let i = 0; i < inputs.length; i++) {
+          const currentNumber = inputs[i];
+          const mobile = currentNumber.querySelector(`#${prefix}_mobile${i + 1}`);
+          const addit = currentNumber.querySelector(`#${prefix}_addit${i + 1}`);
+
+          removeErrorStyle(mobile);
+          removeErrorStyle(addit);
+
+          let mobileValid = validateInput(mobile.value, isValidMobileNumber);
+          let additValid = validateInput(addit.value, isValidAddit);
+
+          if (mobileValid || additValid) {
+              isValid = false;
+
+              if (mobileValid) {
+                  applyErrorStyle(mobile);
+              }
+
+              if (additValid) {
+                  applyErrorStyle(addit);
+              }
+          }
+      }
+  }
+
+  processInputs(recipientNumbers, 'recipient', isValidMobileNumber);
+  processInputs(senderNumbers, 'sender', isValidMobileNumber);
+
+
+
+
+
+
+
+  if (isValid) {
+    let info = gatherFormDataPage4();
+    let inputs_data = new FormData();
+    inputs_data.append('data', JSON.stringify(info));
+    fetch('/get_inputs', {
+      method: 'POST',
+      body: inputs_data
+  })
+  status3.innerText = 'Успешно';
+
+  } else {
+    status3.innerText = 'Заполните все поля корректно';
+  }
+}
+
+
+function isValidMobileNumber(number) {
+  const pattern = /^(\+7|8)[\s\d\(\)\-]{9}\d$/;
+  return pattern.test(number);
+}
+
+
+function isValidAddit(value) {
+    return /^[0-9#*]+$/.test(value);
+}
+
+function applyErrorStyle(element) {
+  element.style.borderColor = "red";
+}
+
+function removeErrorStyle(element) {
+  element.style.borderColor = "";
+}
+
+
+
+
+
+function gatherFormDataPage4() {
+  let formData = {
+    recipient: {
+      company: document.getElementById('recipient_company').value,
+      fullname: document.getElementById('recipient_fullname').value,
+      numbers: []
+    },
+    sender: {
+      company: document.getElementById('sender_company').value,
+      fullname: document.getElementById('sender_fullname').value,
+      numbers: []
+    }
+  };
+
+  function push_numbers(role) {
+    let i = 1;
+    while (true) {
+      let mobileId = `${role}_mobile${i}`;
+      let additId = `${role}_addit${i}`;
+  
+      let mobileElement = document.getElementById(mobileId);
+      let additElement = document.getElementById(additId);
+  
+      if (!mobileElement && !additElement) {
+        break;
+      }
+  
+      let formattedMobile = (mobileElement.value || '').replace(/[^\d]/g, '');
+  
+      let placeData = {
+        [`${role}_mobile${i}`]: formattedMobile !== '' ? `+7${formattedMobile.substring(1)}` : '',
+        [`${role}_addit${i}`]: additElement.value || '',
+      };
+  
+      formData[role].numbers.push(placeData);
+  
+      i++;
+    }
+  }
+  
+  
+  
+  
+  
+
+  push_numbers('recipient');
+  push_numbers('sender');
+
+  return formData;
+}
+
+
+
+
+document.addEventListener('input', function(event) {
+  const targetClassList = event.target.classList;
+
+  if (targetClassList.contains('recipient_mobile')) {
+    handleMobileInput(event, 'recipient');
+  } else if (targetClassList.contains('sender_mobile')) {
+    handleMobileInput(event, 'sender');
+  }
+});
+
+function handleMobileInput(event) {
+  let inputValue = event.target.value;
+
+  if (inputValue.length === 1 && (inputValue === '7' || inputValue === '8')) {
+    event.target.value = '+7';
+  } else if (inputValue.length === 0) {
+    event.target.value = '';
+  }
+}
+
 
