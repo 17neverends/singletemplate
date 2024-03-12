@@ -42,6 +42,8 @@ const status_text = document.getElementById('status1');
 let page1 = document.querySelector('.step1');
 let page2 = document.querySelector('.step2');
 let page3 = document.querySelector('.step3');
+let page4 = document.querySelector('.step4');
+
 let data;
 
 let sliderpoint2 = document.getElementById('slider2');
@@ -271,9 +273,9 @@ function check_inputs_step1() {
     ) {
       if (
         isValidNumber(boxWeight.value) &&
-        isValidNumber(boxLength.value) &&
-        isValidNumber(boxWidth.value) &&
-        isValidNumber(boxHeight.value)
+        isValidSize(boxLength.value) &&
+        isValidSize(boxWidth.value) &&
+        isValidSize(boxHeight.value)
       ) {
         const placeData = {
           weight: parseFloat(boxWeight.value),
@@ -287,14 +289,22 @@ function check_inputs_step1() {
         if (!isValidNumber(boxWeight.value)) {
           applyErrorStyle(boxWeight);
         }
-        if (!isValidNumber(boxLength.value)) {
+        if (!isValidSize(boxLength.value)) {
           applyErrorStyle(boxLength);
+          status_text.innerText = 'Обратитесь к менеджеру для индивидуального расчета';
+          return;
+
         }
-        if (!isValidNumber(boxWidth.value)) {
+        if (!isValidSize(boxWidth.value)) {
           applyErrorStyle(boxWidth);
+          status_text.innerText = 'Обратитесь к менеджеру для индивидуального расчета';
+          return;
+
         }
-        if (!isValidNumber(boxHeight.value)) {
+        if (!isValidSize(boxHeight.value)) {
           applyErrorStyle(boxHeight);
+          status_text.innerText = 'Обратитесь к менеджеру для индивидуального расчета';
+          return;
         }
 
         isValid = false;
@@ -403,7 +413,6 @@ function check_inputs_step1() {
     sliderShowPoint(3);
     cost_6.style.display = 'block';
 
-    sliderpoint3.style.display = 'block';
     sliderpoint3.innerText = '2';
 
   }
@@ -414,8 +423,13 @@ function check_inputs_step1() {
 
 
 function isValidNumber(value) {
-  return !isNaN(parseFloat(value)) && isFinite(value);
+  return !isNaN(parseFloat(value)) && isFinite(value) && value >= 1;
 }
+
+function isValidSize(value) {
+  return !isNaN(parseFloat(value)) && isFinite(value) && value >= 1 && value < 160;
+}
+
 
 function applyErrorStyle(element) {
   element.style.borderColor = "red";
@@ -751,6 +765,18 @@ function sliderShowPoint(point){
     page1.style.display = 'none';
     page2.style.display = 'none';
     page3.style.display = 'block';
+    sliderpoint3.style.display = 'block';
+
+
+  }
+
+  else if (point === 4)
+  {
+    page1.style.display = 'none';
+    page2.style.display = 'none';
+    page3.style.display = 'none';
+
+    page4.style.display = 'block';
 
   }
 }
@@ -798,7 +824,6 @@ document.getElementById("confirm2").addEventListener("click", function () {
 
       document.getElementById('status2').innerText = '';
       sliderShowPoint(3);
-      sliderpoint3.style.display = 'block';
       sliderpoint3.innerText = '3';
 
 
@@ -1205,9 +1230,19 @@ function updateBoxCount(boxName, newValue) {
   }
 }
 
-function submit_info() {
-result.logInfo();
-console.log(globalResult);
+function submit_info(deliveryType) {
+  sliderShowPoint(4);
+  if (deliveryType === 'не выбран') {
+
+  } else if (deliveryType === 'дверь - дверь'){
+
+  } else if (deliveryType === 'дверь - склад'){
+  
+  } else if (deliveryType === 'склад - дверь'){
+  
+  } else if (deliveryType === 'склад - склад'){
+  
+  }
 
 }
 

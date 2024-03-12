@@ -667,3 +667,66 @@ ul {
       background-color: white;
   } 
 
+
+
+  .place_title {
+    display: flex;
+    border-bottom: 2px solid #4bba5d;
+    justify-content: center;
+    margin-bottom: 30px;
+    margin-top: 40px;
+    font-size: 20px;
+}
+
+#add {
+    margin-bottom: 50px;
+    margin-top: 20px;
+}
+
+.recipient_numbers, .sender_numbers {
+    border:1px solid #4bba5d;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 10px;
+}
+
+.addNumberButton {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    background-color: white;
+    color: #1ab248;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    height: 7vh;
+    width: 100%;
+    margin-top: 5px;
+    border-radius: 10px;
+    font-size: 17px;
+    text-align: center;
+    height: 25px;
+    min-height: 25px;
+    display: flex;
+    justify-content: center;
+    line-height: 5px;
+    transition: 0.5s; 
+
+}
+
+.addNumberButton:hover {
+    background-color: #30cc5f;
+    color: white;
+
+}
+
+.numbers-flex {
+    display: flex;
+    justify-content: space-between;
+}
+
+.numbers-flex > div {
+    flex-grow: 1; 
+}
+
+.numbers-flex > div:last-child {
+    margin-left: 20px; 
+}
