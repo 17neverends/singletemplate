@@ -33,7 +33,7 @@ class Result {
       console.log('Field 1:', this.field1);
       console.log('Field 2:', this.field2);
       console.log('Field 3:', this.field3);
-      console.log('Field 4:', this.field4);
+      console.log('Field 4:', this.field4); 
       console.log('Field 5:', this.field5);
       console.log('Field 6:', this.field6);
       console.log('Field 7:', this.field7);
@@ -45,12 +45,14 @@ let page1 = document.querySelector('.step1');
 let page2 = document.querySelector('.step2');
 let page3 = document.querySelector('.step3');
 let page4 = document.querySelector('.step4');
+let page5 = document.querySelector('.step5');
 
 let data;
 
 let sliderpoint2 = document.getElementById('slider2');
 let sliderpoint3 = document.getElementById('slider3');
 let sliderpoint4 = document.getElementById('slider4');
+let sliderpoint5 = document.getElementById('slider5');
 
 const customDropdown = document.getElementById('custom_dropdown');
 let placeCounter = 2;
@@ -97,6 +99,7 @@ let globalResult = {
 let contracts;
 let boxData;
 
+let needCheckPvz = false;
 
 
 
@@ -807,6 +810,23 @@ function sliderShowPoint(point){
 
     }
   }
+
+  else if (point === 5)
+  {
+    page1.style.display = 'none';
+    page2.style.display = 'none';
+    page3.style.display = 'none';
+    page4.style.display = 'none';
+    page5.style.display = 'block';
+    sliderpoint5.style.display = 'block';
+
+    if (!toTarif){
+      sliderpoint5.innerText = '4';
+    } else {
+      sliderpoint5.innerText = '5';
+
+    }
+  }
 }
 
 
@@ -1341,9 +1361,8 @@ function calculateInitialCost() {
 
 
 
-///////////////////////////////////////////////
 
-const status3 = document.getElementById('status3');
+const status4 = document.getElementById('status4');
 
 
 let recipientPlaceCounter = 2;
@@ -1419,6 +1438,9 @@ document.addEventListener('click', function(event) {
   }
 });
 
+let pvz_from_list = false;
+
+
 function check_inputs_page4() {
   const recipientNumbers = document.getElementsByClassName('recipient_numbers');
   const senderNumbers = document.getElementsByClassName('sender_numbers');
@@ -1456,7 +1478,17 @@ function check_inputs_page4() {
 
   processInputs(recipientNumbers, 'recipient', isValidMobileNumber);
   processInputs(senderNumbers, 'sender', isValidMobileNumber);
+  const senderPoint = document.getElementById('sender_point');
+  if (senderPoint && senderPoint.value !== ""){
+    removeErrorStyle(senderPoint);
 
+    if (!pvz_from_list) {
+
+      isValid = false;
+
+      applyErrorStyle(senderPoint);
+    }
+  }
 
 
 
@@ -1464,17 +1496,13 @@ function check_inputs_page4() {
 
 
   if (isValid) {
-    let info = gatherFormDataPage4();
-    let inputs_data = new FormData();
-    inputs_data.append('data', JSON.stringify(info));
-    fetch('/get_inputs', {
-      method: 'POST',
-      body: inputs_data
-  })
-  status3.innerText = 'Успешно';
-
+    for (let i = 1; i <= placeCounter - 1;i++){
+      HashMap[i] = 1;
+    }
+    sliderShowPoint(5);
+    showPlacesOnload();
   } else {
-    status3.innerText = 'Заполните все поля корректно';
+    status4.innerText = 'Заполните все поля корректно';
   }
 }
 
@@ -1599,7 +1627,7 @@ function handleInputPvz(inputElement, list, input_value, otherList) {
       const filtered_cities = result.data;
       console.log(filtered_cities);
 
-      dropdownList(list, filtered_cities, [], trimmedInputValue, inputElement, otherList);
+      dropdownListPvz(list, filtered_cities, [], trimmedInputValue, inputElement, otherList);
   }, 300);
 
   lastInputValuePvz = inputElement.value;
@@ -1632,7 +1660,7 @@ function displayAllItemsPvz(list, display_items, input_value, inputElement) {
         inputElement.value = cityText.trim();
         list.style.display = 'none';
         if (list === senderPointList) {
-            destination_from_list = true;
+            pvz_from_list = true;
             selectedPoint = cityNumber.trim();
         }
     });
@@ -1644,7 +1672,7 @@ function displayAllItemsPvz(list, display_items, input_value, inputElement) {
   });
 }
 
-function dropdownList(list, filtered_cities, filtered_regions, input_value, inputElement, otherList) {
+function dropdownListPvz(list, filtered_cities, filtered_regions, input_value, inputElement, otherList) {
     let itemsToDisplay = [];
     if (input_value !== '') {
         if (filtered_cities.length > 0) {
@@ -1684,9 +1712,12 @@ function setupEventListenersPvz() {
 }
 
 
+
 function submit_info() {
+  status4.innerText = '';
   let additRecepient = document.querySelector(".additionalRecepientInputs")
   let additSender = document.querySelector(".additionalSenderInputs")
+  needCheckPvz = false;
 
   sliderShowPoint(4);
 
@@ -1755,3 +1786,356 @@ function submit_info() {
   }
 
 }
+
+
+//////////////////
+
+function showDropdownPage5(inputID) {
+  var dropdown = document.getElementById(inputID);
+  if (dropdown) {
+    dropdown.style.display = "block";
+  }
+}
+
+
+function selectRolePage5(value, text, inputId, listId, getID, whereID) {
+  var input = document.getElementById(inputId);
+  var list = document.getElementById(listId);
+  input.value = text;
+  if (value === '') {
+    return;
+    
+  }
+
+  if (value === 'without' || value === 'zero') {
+      document.getElementById(whereID).value = '0';
+  } else {
+      var amount = parseFloat(document.getElementById(`${getID}`).value);
+      var ndsRate = parseFloat(text);
+      calculateTotalPage5(amount, ndsRate, whereID);
+  }
+  list.style.display = 'none';
+}
+
+function calculateTotalPage5(amount, ndsRate, whereID) {
+  var total;
+  
+  if (!amount || isNaN(amount)) {
+    total = ''; 
+  } else if (ndsRate === 0 || ndsRate === 'Нет НДС' || ndsRate === 'zero') {
+    total = 0;
+  } else {
+    var prod;
+    if (ndsRate == '10') {
+      prod = 9.090909;
+    } else if (ndsRate == '20') {
+      prod = 16.666667;
+    }
+    
+    total = amount * prod / 100;
+  }
+
+  document.getElementById(whereID).value = total === '' ? '' : total.toFixed(2);
+}
+
+
+document.getElementById('amount').addEventListener('input', function() {
+  var amount = parseFloat(this.value);
+  var hiddenDiv = document.querySelector('.hidden_div');
+  if (!isNaN(amount) && amount > 0) {
+      hiddenDiv.style.display = 'block';
+  } else {
+      hiddenDiv.style.display = 'none';
+      document.getElementById('combobox_value').value = '';
+      document.getElementById('calculation').value = '';
+  }
+});
+
+
+var amountInput = document.getElementById("amount");
+  var ndsInput = document.getElementById("combobox_value_page5");
+
+  amountInput.addEventListener("input", function() {
+    if (amountInput.value !== '' && ndsInput.value !== '') {
+      calculateTotalPage5();
+    } else {
+      document.getElementById("calculation").value = '';
+    }
+  });
+  
+  ndsInput.addEventListener("change", function() {
+    if (amountInput.value !== '' && ndsInput.value !== '') {
+      calculateTotalPage5();
+    } else {
+      document.getElementById("calculation").value = '';
+    }
+  });
+
+  function calculateTotalPage5() {
+    var amount = parseFloat(document.getElementById("amount").value);
+    var ndsRateText = document.getElementById("combobox_value").value;
+    var calculationInput = document.getElementById("calculation");
+    var ndsRate;
+    if (ndsRateText === '10%' || ndsRateText === '20%') {
+      ndsRate = parseInt(ndsRateText);
+    } else {
+      ndsRate = 0;
+    }
+
+    var prod;
+    if (ndsRate === 10) {
+      prod = 9.090909;
+    } else if (ndsRate === 20) {
+      prod = 16.666667;
+    } else {
+      prod = 0;
+    }
+
+    var total = amount * prod / 100;
+    calculationInput.value = total.toFixed(2);
+  }
+
+
+
+let HashMap = {};
+
+
+
+
+function addInputListenerPage5(amountInput, ndsInput, i, current) {
+  amountInput.addEventListener('input', function() {
+      var amount = parseFloat(amountInput.value);
+      var ndsRateText = ndsInput.value;
+      var ndsRate;
+      if (ndsRateText.trim() !== '') {
+          switch (ndsRateText) {
+              case 'Нет НДС':
+              case 'zero':
+                  ndsRate = 0;
+                  break;
+              case '10%':
+                  ndsRate = 10;
+                  break;
+              case '20%':
+                  ndsRate = 20;
+                  break;
+              default:
+                  ndsRate = 0;
+          }
+
+          calculateTotalPage5(amount, ndsRate, `nds_cost${i+1}_${current}`);
+      } 
+  });
+}
+
+
+function showPlacesOnload() {
+  var keys = Object.keys(HashMap);
+  
+  for (let i = 0; i < keys.length; i++) {
+    let current = HashMap[keys[i]];
+    const newPlace = document.createElement('div');
+    newPlace.id = `place${i+1}`;
+    newPlace.innerHTML = `
+          <div class="places-container_page5" id="places-container_page5${i+1}">
+          <p class="place_title_page5"> Место ${i+1}</p>
+          <div class="places" id="place${i+1}_${current}">
+              <p class="items">Товар 1</p>
+              <label>Код артикула</label>
+              <input class="code" type="text" id="code${i+1}_${current}" name="code" placeholder="Введите артикул">
+              <label>Наименование товара</label>
+              <input class="title" type="text" id="title${i+1}_${current}" name="title" value="ТНП" placeholder="Введите товар">
+              <label>Стоимость ед. товара в ₽</label>
+              <input type="number" id="place_cost${i+1}_${current}" name="place_cost" placeholder="Введите стоимость">
+
+
+              <div class="weight_input">
+                  <div class="left_input" id="left_input${i+1}_${current}">
+                      <label>Вес ед. товара (кг)</label>
+                      <input class="weight" type="number" id="weight${i+1}_${current}"  name="weight" placeholder="Введите кг.">
+                  </div>
+                  <div>
+                      <label>Кол-во ед.</label>
+                      <input class="count" type="number" id="count${i+1}_${current}" onkeypress="return event.charCode >= 48 && event.charCode <= 57" name="count" placeholder="Введите шт.">
+                  </div>  
+              </div>
+
+              <label>Оплата получателя за ед. товара в т.ч. НДС ₽</label>
+              <input type="number" class="cost" id="cost${i+1}_${current}" name="cost_with_nds" value="0" placeholder="Введите стоимость">
+              <div class="nds-flex">
+                  <div class="left_input_place" id="left_input_place${i+1}_${current}">
+                      <label>Ставка НДС, %</label>
+                      <input type="text" class="place_combobox_value" id="place_combobox_value${i+1}_${current}" onclick="showDropdownPage5('place_ndsList${i+1}_${current}')" placeholder="НДС" readonly>
+                      <ul id="place_ndsList${i+1}_${current}" class="dropdown-list_page5">
+                          <li value="without" data-id="without" class="option" onclick="selectRolePage5('without', 'Нет НДС','place_combobox_value${i+1}_${current}', 'place_ndsList${i+1}_${current}','cost${i+1}_${current}','nds_cost${i+1}_${current}')">Нет НДС</li>
+                          <li value="zero" data-id="zero" class="option" onclick="selectRolePage5('zero', '0%','place_combobox_value${i+1}_${current}', 'place_ndsList${i+1}_${current}','cost${i+1}_${current}','nds_cost${i+1}_${current}')">0%</li>
+                          <li value="ten" data-id="ten" class="option" onclick="selectRolePage5('ten', '10%','place_combobox_value${i+1}_${current}', 'place_ndsList${i+1}_${current}','cost${i+1}_${current}','nds_cost${i+1}_${current}')">10%</li>
+                          <li value="twenty" data-id="twenty" class="option" onclick="selectRolePage5('twenty', '20%','place_combobox_value${i+1}_${current}', 'place_ndsList${i+1}_${current}','cost${i+1}_${current}','nds_cost${i+1}_${current}')">20%</li>
+                      </ul>
+                  </div>
+
+                  <div>
+                      <label>Сумма НДС, ₽</label>
+                      <input type="text" class="nds_cost" id="nds_cost${i+1}_${current}" name="nds_cost" placeholder="Подсчет">
+                  </div>
+              </div>
+          </div>
+      </div>
+      <button class="created" type="button" id="add" onclick="addPlacePage5(${i+1})" >+ Добавить товар</button>`
+    document.querySelector('.all_places').appendChild(newPlace);
+    var amountInput = document.getElementById(`cost${i+1}_${current}`);
+    var ndsInput = document.getElementById(`place_combobox_value${i+1}_${current}`);
+
+    addInputListenerPage5(amountInput, ndsInput, i, current);
+
+      }
+}
+
+
+function addPlacePage5(id) {
+  let counter = HashMap[id]+1;
+  const newPlace = document.createElement('div');
+  newPlace.classList.add('places');
+  newPlace.id = `place${id}_${counter}`;
+
+  newPlace.innerHTML = `
+      <p class="items">Товар ${counter}</p>
+      <label>Код артикула</label>
+      <input class="code" type="text" id="code${id}_${counter}" name="code" placeholder="Введите артикул">
+      <label>Наименование товара</label>
+      <input class="title" type="text" id="title${id}_${counter}" name="title" value="ТНП" placeholder="Введите товар">
+      <label>Стоимость ед. товара в ₽</label>
+      <input type="number" id="place_cost${id}_${counter}" name="place_cost" placeholder="Введите стоимость">
+
+      <div class="weight_input">
+          <div class="left_input" id="left_input${id}_${counter}">
+              <label>Вес ед. товара (кг)</label>
+              <input class="weight" type="number" id="weight${id}_${counter}" name="weight" placeholder="Введите кг.">
+          </div>
+          <div>
+              <label>Кол-во ед.</label>
+              <input class="count" type="number" id="count${id}_${counter}" onkeypress="return event.charCode >= 48 && event.charCode <= 57" name="count" placeholder="Введите шт.">
+          </div>  
+      </div>
+
+      <label>Оплата получателя за ед. товара в т.ч. НДС ₽</label>
+      <input type="number" class="cost" id="cost${id}_${counter}" name="cost_with_nds" value="0" placeholder="Введите стоимость">
+      <div class="nds-flex">
+          <div class="left_input_place" id="left_input_place${id}_${counter}">
+              <label>Ставка НДС, %</label>
+              <input type="text" class="place_combobox_value" id="place_combobox_value${id}_${counter}" onclick="showDropdownPage5('place_ndsList${id}_${counter}')" placeholder="НДС" readonly>
+              <ul id="place_ndsList${id}_${counter}" class="dropdown-list_page5">
+                  <li value="without" data-id="without" class="option" onclick="selectRolePage5('without', 'Нет НДС','place_combobox_value${id}_${counter}', 'place_ndsList${id}_${counter}', 'cost${id}_${counter}', 'nds_cost${id}_${counter}')">Нет НДС</li>
+                  <li value="zero" data-id="zero" class="option" onclick="selectRolePage5('zero', '0%','place_combobox_value${id}_${counter}', 'place_ndsList${id}_${counter}', 'cost${id}_${counter}', 'nds_cost${id}_${counter}')">0%</li>
+                  <li value="ten" data-id="ten" class="option" onclick="selectRolePage5('ten', '10%','place_combobox_value${id}_${counter}', 'place_ndsList${id}_${counter}', 'cost${id}_${counter}', 'nds_cost${id}_${counter}')">10%</li>
+                  <li value="twenty" data-id="twenty" class="option" onclick="selectRolePage5('twenty', '20%','place_combobox_value${id}_${counter}', 'place_ndsList${id}_${counter}', 'cost${id}_${counter}', 'nds_cost${id}_${counter}')">20%</li>
+              </ul>
+          </div>
+
+          <div>
+              <label>Сумма НДС, ₽</label>
+              <input type="text" class="nds_cost" id="nds_cost${id}_${counter}" name="nds_cost" placeholder="Подсчет">
+          </div>
+      </div>
+      <button class="created" id="for_delete" type="button" onclick="removePlacePage5('${newPlace.id}')">Удалить</button>
+  `;
+  document.getElementById(`places-container_page5${id}`).appendChild(newPlace);
+  var amountInput = document.getElementById(`cost${id}_${counter}`);
+  var ndsInput = document.getElementById(`place_combobox_value${id}_${counter}`);
+  
+  amountInput.addEventListener('input', function() {
+    var amount = parseFloat(amountInput.value);
+    var ndsRateText = ndsInput.value.trim();
+    
+    if (amount && ndsRateText !== '') {
+        var ndsRate;
+        
+        switch (ndsRateText) {
+            case 'zero':
+                ndsRate = 0;
+                break;
+            case '10%':
+                ndsRate = 10;
+                break;
+            case '20%':
+                ndsRate = 20;
+                break;
+            default:
+                ndsRate = 0;
+        }
+
+        calculateTotalPage5(amount, ndsRate, `nds_cost${id}_${counter}`);
+    } else {
+        document.getElementById(`nds_cost${id}_${counter}`).value = '';
+    }
+});
+
+
+
+  HashMap[id]++;
+  
+}
+
+
+function removePlacePage5(placeId) {
+  const placeToRemove = document.getElementById(placeId);
+  if (!placeToRemove) return;
+
+  const parentId = placeToRemove.parentElement.id;
+  const parentIdNum = parentId.match(/\d+/)[0];
+
+  placeToRemove.remove();
+
+  const counter = placeId.match(/\d+$/)[0];
+  delete HashMap[parentIdNum + '_' + counter];
+
+  const places = document.querySelectorAll(`#${parentId} .places`);
+  places.forEach((place, index) => {
+    const newCounter = index + 1;
+    const newPlaceId = `place${parentIdNum}_${newCounter}`;
+    place.id = newPlaceId;
+    place.querySelector('p').textContent = `Товар ${newCounter}`;
+    place.querySelectorAll('input').forEach(input => {
+      const inputIdArray = input.id.split('_');
+      inputIdArray[inputIdArray.length - 1] = newCounter;
+      input.id = inputIdArray.join('_');
+    });
+
+    const leftInputPlace = place.querySelector('.left_input_place');
+    if (leftInputPlace) {
+      leftInputPlace.id = `left_input_place${parentIdNum}_${newCounter}`;
+      const inputInsideLeftInputPlace = leftInputPlace.querySelector('input');
+      if (inputInsideLeftInputPlace) {
+        inputInsideLeftInputPlace.id = `place_combobox_value${parentIdNum}_${newCounter}`;
+        inputInsideLeftInputPlace.setAttribute('onclick', `showDropdownPage5('place_ndsList${parentIdNum}_${newCounter}')`);
+      }
+      const dropdownList = leftInputPlace.querySelector('.dropdown-list_page5');
+      if (dropdownList) {
+        dropdownList.id = `place_ndsList${parentIdNum}_${newCounter}`;
+        dropdownList.querySelectorAll('li').forEach((li, idx) => {
+          const idNum = parentIdNum + '_' + newCounter;
+          li.setAttribute('onclick', `selectRolePage5('${li.dataset.id}', '${li.textContent}', 'place_combobox_value${idNum}', 'place_ndsList${idNum}', 'cost${idNum}', 'nds_cost${idNum}')`);
+        });
+      }
+    }
+    const button = place.querySelector('button');
+    if (button) {
+      button.setAttribute('onclick', `removePlacePage5('${newPlaceId}')`);
+    }
+
+    HashMap[parentIdNum] = newCounter;
+  });
+}
+
+
+document.getElementById('amount').addEventListener('input', function() {
+  var amount = parseFloat(this.value);
+  var hiddenDiv = document.querySelector('.hidden_div');
+  if (!isNaN(amount) && amount > 0) {
+      hiddenDiv.style.display = 'block';
+  } else {
+      hiddenDiv.style.display = 'none';
+      document.getElementById('combobox_value').value = '';
+      document.getElementById('calculation').value = '';
+  }
+});

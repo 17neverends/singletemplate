@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Расчет накладной</title>
+    <title>Создание шаблона</title>
     <!-- <link rel="stylesheet" href="/static/style.css"> -->
     <link rel="stylesheet" href="style.css">
 
@@ -15,6 +15,7 @@
             <button class="slider_button" id="slider2" type="button" onclick="sliderShowPoint(2)">2</button>
             <button class="slider_button" id="slider3" type="button" onclick="sliderShowPoint(3)">3</button>
             <button class="slider_button" id="slider4" type="button" onclick="sliderShowPoint(4)">4</button>
+            <button class="slider_button" id="slider5" type="button" onclick="sliderShowPoint(5)">5</button>
 
         </div>        
         <div class="step1">
@@ -283,12 +284,46 @@
     
     
     
-            <p class="status" id="status3"></p>
+            <p class="status" id="status4"></p>
     
             <button type="button" class="confirm" onclick="check_inputs_page4()">Принять</button>
             <button type="button" class="back" id="back_to_3" onclick="sliderShowPoint(3)">Назад</button>
         </div>
+
+
+
+        <div class="step5">
+            <h1>Общая информация</h1>
+
+            <label>Доп. сбор за доставку с получателя, в т.ч. НДС</label>
+            <input type="text" id="amount" name="amount" placeholder="Введите сумму">
+            <div class="hidden_div">
+                <label>Ставка/Сумма НДС за доп. сбор с получателя (включается когда введен доп. сбор)</label>
+                <div class="nds-flex">
+                    <div class="droprow">
+                        <input type="text" id="combobox_value_page5" onclick="showDropdownPage5('ndsList')" placeholder="НДС" readonly>
+                        <ul id="ndsList" class="dropdown-list_page5">
+                            <li value="without" data-id="without" class="option" onclick="selectRolePage5('without', 'Нет НДС','combobox_value_page5', 'ndsList', 'amount', 'calculation')">Нет НДС</li>
+                            <li value="zero" data-id="zero" class="option" onclick="selectRolePage5('zero', '0%','combobox_value_page5', 'ndsList', 'amount', 'calculation')">0%</li>
+                            <li value="ten" data-id="ten" class="option" onclick="selectRolePage5('ten', '10%','combobox_value_page5', 'ndsList', 'amount', 'calculation')">10%</li>
+                            <li value="twenty" data-id="twenty" class="option" onclick="selectRolePage5('twenty', '20%','combobox_value_page5', 'ndsList', 'amount', 'calculation')">20%</li>
+                        </ul>
+                    </div>
+                    <p class="separator">/</p>
+                    <input type="text" id="calculation" name="calculation" placeholder="Подсчет" readonly>
+                </div>
+            </div>
+
+            <div class="all_places"></div>
+
+            <label class="status" id="status5"></label>
+
+            <button type="button" class="confirm">Принять</button>
+            <button type="button" class="back" id="back_to_4">Назад</button>
+        </div>
         
+
+
     </form>
     <button type="button" onclick="scrollToTop()" id="scrollToTopBtn">↑</button>
 

@@ -361,7 +361,7 @@ ul {
     opacity: 0.6;
 }
 
-.step2, .step3, .step4 {
+.step2, .step3, .step4, .step5 {
     display: none;
 }
 
@@ -453,7 +453,7 @@ ul {
     margin-right: 10px;
 }
 
-#slider2, #slider3, #slider4{
+#slider2, #slider3, #slider4, #slider5{
     display: none;
 }
 
@@ -729,4 +729,130 @@ ul {
 
 .numbers-flex > div:last-child {
     margin-left: 20px; 
+}
+
+
+
+.nds-flex{
+    display: flex;
+}
+
+.droprow {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.separator {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+
+.weight_input {
+    display: flex;
+    justify-content: space-between; 
+}
+
+.weight_input .left_input,
+.weight_input div {
+    flex-grow: 1;
+}
+
+.weight_input .left_input {
+    margin-right: 10px;
+}
+
+
+.left_input_place{
+    width: 45%;
+    margin-right: 20px;
+}
+
+
+.nds-flex {
+    display: flex;
+    justify-content: space-between;
+}
+
+.nds-flex .left_input_place,
+.nds-flex div {
+    flex-grow: 1; 
+}
+
+.nds-flex .left_input_place {
+    margin-right: 10px; 
+}
+
+
+
+.left_input{
+    margin-right: 20px;
+}
+
+
+.places-container_page5 {
+    border:1px solid #4bba5d;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.hidden_div {
+    display: none;
+}
+
+.items{
+    border-top: 2px solid #4bba5d;
+    padding-top: 20px;
+    font-size: 17px;
+}
+
+.dropdown-list_page5 {
+    display: none;
+}
+
+.place_title_page5 {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+    margin-top: 5px;
+    font-size: 20px;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"]:focus {
+    outline: none;
+    border-color: #1ab248;
+    background-color: transparent;
+}
+
+input[type="number"]:hover {
+    background-color: #e8f7ec;  
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 15px;
+    background-color: #f5f6f7;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    font-size: 17px;
+    border: 2px solid #f5f6f7; 
+    transition: border-color 0.5s; 
+    border-radius: 10px;
+    height: 52px;
+    min-height: 52px;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    margin-top: 15px;
 }
